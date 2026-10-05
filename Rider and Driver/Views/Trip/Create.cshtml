@@ -1,0 +1,77 @@
+﻿
+@model Rider_and_Driver.Models.Trip
+@{
+	ViewData["Title"] = "Create Trip";
+}
+
+<h1>Create Trip</h1>
+<hr />
+<div class="row">
+	<div class="col-md-6">
+		<form asp-action="Create", method="post">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+			<div class="form-group mb-3">
+				<label asp-for="DepartureDate" class="control-label"></label>
+				<input asp-for="DepartureDate" type="date" class="form-control" />
+				<span asp-validation-for="DepartureDate" class="text-danger"></span>
+			</div>
+
+			<div class="form-group mb-3">
+				<label asp-for="DepartureTime" class="control-label"></label>
+				<input asp-for="DepartureTime" type="time" step="900" class="form-control" />
+				<small class="form-text text-muted">15-minute intervals</small>
+				<span asp-validation-for="DepartureTime" class="text-danger"></span>
+			</div>
+
+			<div class="form-group mb-3">
+				<label asp-for="FromLocation" class="control-label"></label>
+				<select asp-for="FromLocation" asp-items="ViewBag.Locations" class="form-control">
+					<option value="">Select Departure Location</option>
+				</select>
+				<span asp-validation-for="FromLocation" class="text-danger"></span>
+			</div>
+
+			<div class="form-group mb-3">
+				<label asp-for="ToLocation" class="control-label"></label>
+				<select asp-for="ToLocation" asp-items="ViewBag.Locations" class="form-control">
+					<option value="">Select Arrival Location</option>
+				</select>
+				<span asp-validation-for="ToLocation" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="SeatsAvailable" class="control-label"></label>
+				<input asp-for="SeatsAvailable" type="number" min="1" max="10" class="form-control" />
+				<span asp-validation-for="SeatsAvailable" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Cost" class="control-label"></label>
+				<div class="input-group">
+					<span class="input-group-text">$</span>
+					<input asp-for="Cost" type="number" step="0.01" min="0.01" class="form-control" />
+				</div>				
+				<span asp-validation-for="Cost" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="NumberPlate" class="control-label"></label>
+				<input asp-for="NumberPlate" class="form-control" maxlength="10" />
+				<span asp-validation-for="SeatsAvailable" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">Create Trip</button>
+				<a asp-action="Index" class="btn btn-secondary">Back to Login</a>
+			</div>
+		</form>
+	</div>
+</div>
+
+@section Scripts
+{
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

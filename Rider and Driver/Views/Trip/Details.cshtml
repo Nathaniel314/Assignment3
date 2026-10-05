@@ -1,0 +1,79 @@
+﻿@model Rider_and_Driver.Models.Trip
+
+@{
+	ViewData["Title"] = "Trip Details";
+	var bookings = ViewBag.Bookings as List<Rider_and_Driver.Models.Booking> ?? new List<Rider_and_Driver.Models.Booking>();
+	var confirmedCount = (int)(ViewBag.ConfirmedCount ?? 0);
+}
+
+<h1>Trip Details</h1>
+<hr />
+
+<div class="card mb-4" style="max-width: 700px;">
+	<div class="card-body">
+		<h4 class="card-title">@Model.FromLocation &rarr; @Model.ToLocation</h4>
+
+		<div class="row mt-3">
+			<div class="col-md-6">
+				<p class="mb-1"><strong>Date:</strong> @Model.DepartureDate.ToString("dd MMM yyyy")</p>
+				<p class="mb-1"><strong>Time:</strong> @Model.DepartureTime.ToString(@"hh\:mm")</p>
+				<p class="mb-1"><strong>Cost:</strong> $@Model.Cost.ToString("F2") per seat</p>
+			</div>
+			<div class="col-md-6">
+				<p class="mb-1"><strong>Plate:</strong> @Model.NumberPlate</p>
+				<p class="mb-1"><strong>Seats:</strong> @Model.SeatsAvailable</p>
+				<p class="mb-1"><strong>Confirmed Bookings:</strong>@confirmedCount</p>
+			</div>
+		</div>
+
+		<div class="mt-3">
+			<a asp-action="Index" class="btn btn-secondary btn-sm">Back to My Trips</a>
+			<a asp-action="Create" class="btn btn-outline-primary btn-sm">Create Another Trip</a>
+
+			<form asp-action="Cancel" asp-route-id="@Model.TripId" method="post" class="d-inline"
+				  onsubmit="return confirm('Cancel this trip? All confirmed bookings will be cancelled.');">
+				<button type="submit" class="btn btn-outline-danger btn-sm">Cancel Trip</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+<h3>Bookings on this trip</h3>
+
+@if (!bookings.Any())
+{
+	<div class="alert alert-info">No bookings yet on this Trip</div>
+}
+else
+{
+	<table class="table table-striped" >
+		<thead>
+			<tr>
+				<th>Rider</th>
+				<th>Cost Paid</th>
+				<th>Booked On</th>
+				<th>Status</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach(var booking in bookings)
+			{
+				<tr>
+					<td>@(booking.Rider?.Username ?? "-")</td>
+					<td>$@booking.TotalCost.ToString("F2")</td>
+					<td>@booking.BookedAt.ToString("dd MMM yyyy HH:mm")</td>
+					<td>
+					@if (booking.Status == "Confirmed")
+					{
+						<span class="badge bg-success">Confirmed</span>
+					}
+					else
+					{
+						<span class="badge bg-secondary">Cancelled</span>
+					}
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

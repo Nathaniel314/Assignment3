@@ -9,6 +9,20 @@
     <link rel="stylesheet" href="~/Rider_and_Driver.styles.css" asp-append-version="true" />
 </head>
 <body>
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger mb-0 rounded-0 text-center">
+            @TempData["Error"]
+
+        </div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success mb-0 rounded-0 text-center">
+            @TempData["Success"]
+
+        </div>
+    }
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -27,6 +41,38 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+                    
+
+                    @if (Context.Session.GetString("Role") == "Driver")
+                    {
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Trip" asp-action="Index">My Trips</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Trip" asp-action="Create">Create Trip</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="History" asp-action="Index">History</a>
+                            </li>
+                        </ul>
+                    }
+
+                    else if (Context.Session.GetString("Role") == "Rider")
+                    {
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Booking" asp-action="Browse">Browse Trips</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Booking" asp-action="MyBookings">My Bookings</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="History" asp-action="Index">History</a>
+                            </li>
+                        </ul>
+                    }
+
                     <ul class="navbar-nav">
                         @if (Context.Session.GetString("Username") != null)
                         {
@@ -34,7 +80,9 @@
                                 <span class="nav-link text-dark">Hello, @Context.Session.GetString("Username")!</span>
                                 </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Logout</a>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="nav-link text-dark btn btn-link">Logout</button>
+                                    </form>
                             </li>
                         }
                         else

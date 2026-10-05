@@ -10,6 +10,24 @@ namespace Rider_and_Driver.Data
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Trip> Trips { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Booking>()
+                .HasOne(b=>b.Trip)
+                .WithMany()
+                .HasForeignKey(b=>b.TripId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Booking>()
+                .HasOne(b=>b.Rider)
+                .WithMany()
+                .HasForeignKey(b => b.RiderUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }
