@@ -1,0 +1,468 @@
+﻿@model Rider_and_Driver.Models.Trip
+
+<div class="driver-home">
+
+    <div class="driver-content">
+
+        <h1>Driver Homepage</h1>
+
+        <p>Welcome, Driver!</p>
+
+
+        <!-- Calendar -->
+
+        <div class="calendar-box">
+
+            <div class="calendar">
+
+                <div class="calendar-header">
+
+                    <button type="button" id="prevMonth">
+                        &lt;
+                    </button>
+
+                    <h2 id="monthYear"></h2>
+
+                    <button type="button" id="nextMonth">
+                        &gt;
+                    </button>
+
+                </div>
+
+
+                <div class="calendar-weekdays">
+
+                    <div>Mo</div>
+                    <div>Tu</div>
+                    <div>We</div>
+                    <div>Th</div>
+                    <div>Fr</div>
+                    <div>Sa</div>
+                    <div>Su</div>
+
+                </div>
+
+
+                <div class="calendar-days" id="calendarDays">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Ride Details Form -->
+
+        <div class="ride-form-box" id="rideForm">
+
+            <h2>Enter Ride Details</h2>
+
+            <form asp-controller="DriverOnly"
+                  asp-action="CreateTrip"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+
+                <!-- Selected Date -->
+
+                <input type="hidden"
+                       asp-for="DepartureDate"
+                       id="selectedDate" />
+
+                <div class="selected-date">
+                    Selected Date:
+                    <strong id="selectedDateText"></strong>
+                </div>
+
+
+                <!-- Departure Time -->
+
+                <div class="mb-3">
+
+                    <label asp-for="DepartureTime"
+                           class="form-label">
+                        Departure Time
+                    </label>
+
+                    <input asp-for="DepartureTime"
+                           type="time"
+                           class="form-control" />
+
+                    <span asp-validation-for="DepartureTime"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Depart From -->
+
+                <div class="mb-3">
+
+                    <label asp-for="FromLocation"
+                           class="form-label">
+                        Depart From
+                    </label>
+
+                    <input asp-for="FromLocation"
+                           class="form-control"
+                           placeholder="Enter departure location" />
+
+                    <span asp-validation-for="FromLocation"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Going To -->
+
+                <div class="mb-3">
+
+                    <label asp-for="ToLocation"
+                           class="form-label">
+                        Going To
+                    </label>
+
+                    <input asp-for="ToLocation"
+                           class="form-control"
+                           placeholder="Enter destination" />
+
+                    <span asp-validation-for="ToLocation"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Seats -->
+
+                <div class="mb-3">
+
+                    <label asp-for="SeatsAvailable"
+                           class="form-label">
+                        Seats Available
+                    </label>
+
+                    <input asp-for="SeatsAvailable"
+                           type="number"
+                           class="form-control"
+                           min="1"
+                           max="10"
+                           placeholder="Enter number of seats" />
+
+                    <span asp-validation-for="SeatsAvailable"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Cost -->
+
+                <div class="mb-3">
+
+                    <label asp-for="Cost"
+                           class="form-label">
+                        Cost per Seat ($)
+                    </label>
+
+                    <input asp-for="Cost"
+                           type="number"
+                           step="0.01"
+                           class="form-control"
+                           min="0.01"
+                           max="25"
+                           placeholder="Enter cost per seat" />
+
+                    <span asp-validation-for="Cost"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Number Plate -->
+
+                <div class="mb-3">
+
+                    <label asp-for="NumberPlate"
+                           class="form-label">
+                        Number Plate
+                    </label>
+
+                    <input asp-for="NumberPlate"
+                           class="form-control"
+                           placeholder="Enter vehicle number plate" />
+
+                    <span asp-validation-for="NumberPlate"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Submit -->
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Create Ride
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+
+    <script>
+
+        let currentDate = new Date();
+
+        const monthYear =
+            document.getElementById("monthYear");
+
+        const calendarDays =
+            document.getElementById("calendarDays");
+
+        const rideForm =
+            document.getElementById("rideForm");
+
+        const selectedDate =
+            document.getElementById("selectedDate");
+
+        const selectedDateText =
+            document.getElementById("selectedDateText");
+
+
+        const months = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ];
+
+
+        function createCalendar() {
+
+            calendarDays.innerHTML = "";
+
+            const year =
+                currentDate.getFullYear();
+
+            const month =
+                currentDate.getMonth();
+
+
+            monthYear.textContent =
+                months[month] + " " + year;
+
+
+            // Get first day of month
+
+            let firstDay =
+                new Date(year, month, 1).getDay();
+
+
+            // Make Monday the first day
+
+            firstDay =
+                firstDay === 0
+                    ? 6
+                    : firstDay - 1;
+
+
+            // Get number of days
+
+            const daysInMonth =
+                new Date(
+                    year,
+                    month + 1,
+                    0
+                ).getDate();
+
+
+            // Add empty spaces
+
+            for (let i = 0; i < firstDay; i++) {
+
+                const emptyDay =
+                    document.createElement("div");
+
+                emptyDay.classList.add(
+                    "calendar-day",
+                    "empty"
+                );
+
+                calendarDays.appendChild(
+                    emptyDay
+                );
+            }
+
+
+            // Add dates
+
+            for (
+                let day = 1;
+                day <= daysInMonth;
+                day++
+            ) {
+
+                const dayElement =
+                    document.createElement("div");
+
+
+                dayElement.classList.add(
+                    "calendar-day"
+                );
+
+
+                dayElement.textContent =
+                    day;
+
+
+                dayElement.addEventListener(
+                    "click",
+                    function () {
+
+                        // Remove previous selection
+
+                        document
+                            .querySelectorAll(
+                                ".calendar-day"
+                            )
+                            .forEach(function (d) {
+
+                                d.classList.remove(
+                                    "selected"
+                                );
+
+                            });
+
+
+                        // Select date
+
+                        dayElement.classList.add(
+                            "selected"
+                        );
+
+
+                        // Create date value
+
+                        const monthNumber =
+                            String(month + 1)
+                                .padStart(2, "0");
+
+                        const dayNumber =
+                            String(day)
+                                .padStart(2, "0");
+
+
+                        const dateValue =
+                            year +
+                            "-" +
+                            monthNumber +
+                            "-" +
+                            dayNumber;
+
+
+                        // Set hidden date
+
+                        selectedDate.value =
+                            dateValue;
+
+
+                        // Display selected date
+
+                        selectedDateText.textContent =
+                            day +
+                            " " +
+                            months[month] +
+                            " " +
+                            year;
+
+
+                        // Show ride form
+
+                        rideForm.style.display =
+                            "block";
+
+
+                        // Scroll to form
+
+                        rideForm.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+
+                    }
+                );
+
+
+                calendarDays.appendChild(
+                    dayElement
+                );
+            }
+        }
+
+
+        // Previous month
+
+        document
+            .getElementById("prevMonth")
+            .addEventListener(
+                "click",
+                function () {
+
+                    currentDate.setMonth(
+                        currentDate.getMonth() - 1
+                    );
+
+                    createCalendar();
+
+                }
+            );
+
+
+        // Next month
+
+        document
+            .getElementById("nextMonth")
+            .addEventListener(
+                "click",
+                function () {
+
+                    currentDate.setMonth(
+                        currentDate.getMonth() + 1
+                    );
+
+                    createCalendar();
+
+                }
+            );
+
+
+        // Load calendar
+
+        createCalendar();
+
+    </script>
+
+}

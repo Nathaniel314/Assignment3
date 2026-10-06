@@ -1,22 +1,382 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
+
+
+/* =========================
+   PAGE LAYOUT
+   ========================= */
 
 html {
-  position: relative;
-  min-height: 100%;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin: 0;
+}
+
+.site-body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+    .site-body main {
+        flex: 1;
+    }
+
+
+/* =========================
+   FOOTER
+   ========================= */
+
+.footer {
+    width: 100%;
+    flex-shrink: 0;
+    padding: 75px 0;
+    min-height: 120px;
+}
+
+
+/* =========================
+   DRIVER HOMEPAGE
+   ========================= */
+
+.driver-home {
+    width: 100%;
+    flex: 1;
+    min-height: 100%;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    background-image: url('/css/DriverHome.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.driver-content {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+    .driver-content h1 {
+        margin-top: 0;
+        font-size: 42px;
+    }
+
+    .driver-content p {
+        font-size: 18px;
+    }
+
+
+/* =========================
+   CALENDAR BOX
+   ========================= */
+
+.calendar-box {
+    width: 100%;
+    max-width: 800px;
+    margin: 25px auto;
+    padding: 30px;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.80);
+    border-radius: 14px;
+}
+
+
+/* =========================
+   CALENDAR
+   ========================= */
+
+.calendar {
+    width: 100%;
+}
+
+
+/* Calendar Header */
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+    .calendar-header h2 {
+        margin: 0;
+        font-size: 30px;
+        text-align: center;
+    }
+
+    .calendar-header button {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        padding: 5px 15px;
+    }
+
+        .calendar-header button:hover {
+            color: #258cfb;
+        }
+
+
+/* =========================
+   WEEKDAYS
+   ========================= */
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+
+/* =========================
+   CALENDAR DAYS
+   ========================= */
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-auto-rows: minmax(55px, auto);
+    gap: 5px;
+    text-align: center;
+}
+
+.calendar-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 45px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+    .calendar-day:hover {
+        background-color: #e6f2ff;
+    }
+
+    .calendar-day.selected {
+        background-color: #258cfb;
+        color: white;
+    }
+
+    .calendar-day.empty {
+        cursor: default;
+        background: transparent;
+    }
+
+
+/* =========================
+   LOGIN PAGE
+   ========================= */
+
+.login-page {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 450px;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+}
+
+    .login-box h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media (max-width: 768px) {
+
+    .driver-home {
+        padding: 30px 15px;
+    }
+
+    .driver-content h1 {
+        font-size: 34px;
+    }
+
+    .calendar-box {
+        padding: 20px;
+    }
+
+    .calendar-header h2 {
+        font-size: 25px;
+    }
+
+    .calendar-header button {
+        font-size: 24px;
+        padding: 5px 10px;
+    }
+
+    .calendar-days {
+        grid-auto-rows: minmax(45px, auto);
+    }
+
+    .calendar-day {
+        min-height: 40px;
+    }
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 576px) {
+
+    .driver-home {
+        padding: 20px 10px;
+        min-height: calc(100vh - 60px);
+        background-position: center;
+    }
+
+    .driver-content h1 {
+        font-size: 28px;
+    }
+
+    .driver-content p {
+        font-size: 16px;
+    }
+
+    .calendar-box {
+        padding: 12px;
+        border-radius: 10px;
+    }
+
+    .calendar-header {
+        margin-bottom: 20px;
+    }
+
+        .calendar-header h2 {
+            font-size: 20px;
+        }
+
+        .calendar-header button {
+            font-size: 22px;
+            padding: 5px;
+        }
+
+    .calendar-weekdays {
+        font-size: 13px;
+    }
+
+    .calendar-days {
+        gap: 2px;
+        grid-auto-rows: minmax(38px, auto);
+    }
+
+    .calendar-day {
+        min-height: 35px;
+        font-size: 14px;
+    }
+
+
+    /* Login on mobile */
+
+    .login-page {
+        padding: 25px 15px;
+    }
+
+    .login-box {
+        padding: 20px;
+    }
+}
+/* =========================
+   RIDE FORM
+   ========================= */
+
+.ride-form-box {
+    display: none;
+    width: 100%;
+    max-width: 800px;
+    margin: 25px auto;
+    padding: 30px;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.88);
+    border-radius: 14px;
+}
+
+    .ride-form-box h2 {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+.selected-date {
+    background: rgba(37, 140, 251, 0.10);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 576px) {
+
+    .ride-form-box {
+        padding: 15px;
+    }
+}
+/*Rider page */
+.rider-home {
+    width: 100%;
+    flex: 1;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    background-image: url('/css/DriverHome.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.rider-rides-box {
+    width: 100%;
+    max-width: 800px;
+    margin: 25px auto;
+    padding: 30px;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.88);
+    border-radius: 14px;
+}
+
+    .rider-rides-box h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+.ride-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
 }

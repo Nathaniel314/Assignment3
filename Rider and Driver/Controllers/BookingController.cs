@@ -5,7 +5,7 @@ using Rider_and_Driver.Models;
 
 namespace Rider_and_Driver.Controllers
 {
-    public class BookingController : RiderOnlyController
+    public class BookingController : Controller
     {
         private readonly ApplicationDbContext _db;
 
@@ -14,151 +14,255 @@ namespace Rider_and_Driver.Controllers
             _db = db;
         }
 
-        [HttpGet]
-        public IActionResult Browse()
-        {
-            var riderId = HttpContext.Session.GetInt32("UserId");
 
-            var trips = _db.Trips
-                .Include(t => t.Driver)
-                .Where(t => t.DepartureDate.Date >= DateTime.Now && t.SeatsAvailable > 0 && t.Status== "Active")
-                .OrderBy(t => t.DepartureDate)
-                .ThenBy(t => t.DepartureTime)
-                .ToList();
-
-            var bookedTripIds= _db.Bookings
-                .Where(b => b.RiderUserId == riderId && b.Status == "Confirmed")
-                .Select(b => b.TripId)
-                .ToList();
-
-            ViewBag.BookedTripIds= bookedTripIds;
-            return View(trips);
-        }
-
-        [HttpGet]
-        public IActionResult Book(int id)
-        {
-            var trip = _db.Trips
-                .Include(t => t.Driver)
-                .FirstOrDefault(t => t.TripId == id);
-
-            if (trip == null)
-                return NotFound();
-
-            if (trip.SeatsAvailable <= 0)
-            {
-                TempData["Error"] = "Sorry, this trip is full.";
-                return RedirectToAction("Browse");
-            }
-
-            var riderId = HttpContext.Session.GetInt32("UserId");
-            var existing = _db.Bookings
-                .Any(b => b.TripId == id && b.RiderUserId == riderId && b.Status == "Confirmed");
-
-            if (existing)
-            {
-                TempData["Error"] = "You have already booked this Trip";
-                return RedirectToAction("MyBookings");
-            }
-
-            return View(trip);
-        }
+        // =========================
+        // BOOK RIDE
+        // =========================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ActionName("Book")]
-        public IActionResult BookPost(int id)
+        public IActionResult Book(int tripId)
         {
-            var riderId = HttpContext.Session.GetInt32("UserId");
-            if (riderId == null)
-                return RedirectToAction("Login", "Account");
+            var username =
+                HttpContext.Session.GetString("Username");
 
-            var trip = _db.Trips.FirstOrDefault(t => t.TripId == id);
+            var role =
+                HttpContext.Session.GetString("Role");
+
+            var riderUserId =
+                HttpContext.Session.GetInt32("UserId");
+
+
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
+
+            if (role != "Rider")
+            {
+                TempData["Error"] =
+                    "Only Riders can book rides.";
+
+                return RedirectToAction(
+                    "Index",
+                    "Home");
+            }
+
+
+            if (riderUserId == null)
+            {
+                TempData["Error"] =
+                    "Unable to identify rider.";
+
+                return RedirectToAction(
+                    "Index",
+                    "RiderOnly");
+            }
+
+
+            var trip = _db.Trips
+                .FirstOrDefault(t =>
+                    t.TripId == tripId);
+
 
             if (trip == null)
-                return NotFound();
+            {
+                TempData["Error"] =
+                    "Ride not found.";
+
+                return RedirectToAction(
+                    "Index",
+                    "RiderOnly");
+            }
+
+
+            if (trip.Status != "Active")
+            {
+                TempData["Error"] =
+                    "This ride is no longer available.";
+
+                return RedirectToAction(
+                    "Index",
+                    "RiderOnly");
+            }
+
 
             if (trip.SeatsAvailable <= 0)
             {
-                TempData["Error"] = "Sorry, This trip is fully Booked";
-                return RedirectToAction("Browser");
+                TempData["Error"] =
+                    "No seats are available.";
+
+                return RedirectToAction(
+                    "Index",
+                    "RiderOnly");
             }
 
-            var existing = _db.Bookings
-                .Any(b => b.TripId == id && b.RiderUserId == riderId && b.Status == "Confirmed");
 
-            if (existing)
+            var alreadyBooked =
+                _db.Bookings.Any(
+                    b =>
+                        b.TripId == tripId &&
+                        b.RiderUserId ==
+                            riderUserId.Value &&
+                        b.Status == "Confirmed"
+                );
+
+
+            if (alreadyBooked)
             {
-                TempData["Error"] = "You have already Booked this trip";
-                return RedirectToAction("MyBookings");
+                TempData["Error"] =
+                    "You have already booked this ride.";
+
+                return RedirectToAction(
+                    "Index",
+                    "RiderOnly");
             }
+
 
             var booking = new Booking
             {
-                TripId = id,
-                RiderUserId = riderId.Value,
-                TotalCost = trip.Cost,
-                Status = "Confirmed",
-                BookedAt = DateTime.Now
+                TripId = trip.TripId,
+
+                RiderUserId =
+                    riderUserId.Value,
+
+                TotalCost =
+                    trip.Cost,
+
+                Status =
+                    "Confirmed",
+
+                BookedAt =
+                    DateTime.Now
             };
 
-            trip.SeatsAvailable -= 1;
+
+            trip.SeatsAvailable--;
+
 
             _db.Bookings.Add(booking);
+
             _db.SaveChanges();
 
-            TempData["Success"] = $"Trip Booked! Seat reserved for ${trip.Cost:F2}.";
-            return RedirectToAction("MyBookings");
+
+            TempData["Success"] =
+                "Ride booked successfully.";
+
+
+            return RedirectToAction(
+                "MyBookings");
         }
+
+
+        // =========================
+        // MY BOOKINGS
+        // =========================
+
         [HttpGet]
         public IActionResult MyBookings()
         {
-            var riderId = HttpContext.Session.GetInt32("UserId");
+            var riderUserId =
+                HttpContext.Session.GetInt32("UserId");
 
-            var booking = _db.Bookings
+
+            if (riderUserId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
+
+            var bookings = _db.Bookings
                 .Include(b => b.Trip)
-                    .ThenInclude(t => t.Driver)
-                .Where(b => b.RiderUserId == riderId && b.Status== "Confirmed" && b.Trip != null && b.Trip.Status=="Active")
-                .OrderByDescending(b => b.BookedAt)
+                .ThenInclude(t => t.Driver)
+                .Where(
+                    b =>
+                        b.RiderUserId ==
+                        riderUserId.Value
+                )
+                .OrderByDescending(
+                    b => b.BookedAt)
                 .ToList();
-            return View(booking);
+
+
+            return View(bookings);
         }
+
+
+        // =========================
+        // CANCEL BOOKING
+        // =========================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Cancel(int id)
         {
-            var riderId = HttpContext.Session.GetInt32("UserId");
+            var riderUserId =
+                HttpContext.Session.GetInt32("UserId");
+
+
+            if (riderUserId == null)
+            {
+                return RedirectToAction(
+                    "Login",
+                    "Account");
+            }
+
 
             var booking = _db.Bookings
-               .Include(b => b.Trip)
-               .FirstOrDefault(b => b.BookingId == id);
+                .Include(b => b.Trip)
+                .FirstOrDefault(
+                    b =>
+                        b.BookingId == id &&
+                        b.RiderUserId ==
+                            riderUserId.Value
+                );
+
 
             if (booking == null)
-                return NotFound();
-
-            if (booking.RiderUserId != riderId)
             {
-                TempData["Error"] = "You can only cancel your own booking.";
-                return View(MyBookings);
+                TempData["Error"] =
+                    "Booking not found.";
+
+                return RedirectToAction(
+                    "MyBookings");
             }
+
 
             if (booking.Status == "Cancelled")
             {
-                TempData["Error"] = "This booking is already Cancelled";
-                return View(MyBookings);
+                TempData["Error"] =
+                    "This booking is already cancelled.";
+
+                return RedirectToAction(
+                    "MyBookings");
             }
 
+
+            // Change booking status
             booking.Status = "Cancelled";
-            if (booking.Trip != null && booking.Trip.SeatsAvailable < 10)
+
+
+            // Return seat to the ride
+            if (booking.Trip != null)
             {
-                booking.Trip.SeatsAvailable += 1;
+                booking.Trip.SeatsAvailable++;
             }
+
 
             _db.SaveChanges();
 
-            TempData["Success"] = "Booking cancelled";
-            return RedirectToAction("MyBookings");
+
+            TempData["Success"] =
+                "Booking cancelled successfully.";
+
+
+            return RedirectToAction(
+                "MyBookings");
         }
     }
 }

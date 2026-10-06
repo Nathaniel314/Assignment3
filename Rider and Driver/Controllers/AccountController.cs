@@ -43,8 +43,19 @@ namespace Rider_and_Driver.Controllers
             HttpContext.Session.SetString("Username", user.Username);
             HttpContext.Session.SetString("Role", user.Role);
 
+            if (user.Role == "Rider")
+            {
+                return RedirectToAction("Index", "RiderOnly");
+            }
+
+            if (user.Role == "Driver")
+            {
+                return RedirectToAction("Index", "DriverOnly");
+            }
+
             return RedirectToAction("Index", "Home");
         }
+        
 
         [HttpGet]
         public IActionResult Register()
@@ -83,8 +94,31 @@ namespace Rider_and_Driver.Controllers
             user.CreatedAt= DateTime.Now;
 
             user.Password= BCrypt.Net.BCrypt.HashPassword(user.Password);
-
+            // Save user first
             _db.Users.Add(user);
+            _db.SaveChanges();
+
+            // Create rider or drvier record
+            if (user.Role == "Rider")
+            {
+                var rider = new Rider
+                {
+                    UserId = user.UserId
+                };
+
+                _db.Riders.Add(rider);
+            }
+            else if (user.Role == "Driver")
+            {
+                var driver = new Driver
+                {
+                    UserId = user.UserId,
+                    LicenseNumber = "Not Provided"
+                };
+
+                _db.Drivers.Add(driver);
+            }
+
             _db.SaveChanges();
 
             ViewBag.Success = "Account created. Please log in";

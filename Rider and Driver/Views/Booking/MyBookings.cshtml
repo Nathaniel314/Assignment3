@@ -1,68 +1,108 @@
 ﻿@model IEnumerable<Rider_and_Driver.Models.Booking>
 
 @{
-	ViewData["Title"] = "My Bookings";
+    ViewData["Title"] = "My Bookings";
 }
 
 <h1>My Bookings</h1>
+
 <hr />
 
 @if (!Model.Any())
 {
-	<div class="alert alert-info">
-		You haven't booked any trips yet.
-		<a asp-action="Browse">Browse available trips</a>
-	</div>
+    <div class="alert alert-info">
+        You haven't booked any trips yet.
+    </div>
 }
 else
 {
-	<table class="table table-striped">
-		<thead>
-			<tr>
-				<th>Booked On</th>
-				<th>Date</th>
-				<th>Time</th>
-				<th>From</th>
-				<th>To</th>
-				<th>Driver</th>
-				<th>Cost</th>
-				<th>Status</th>	
-				<th></th>
-			</tr>		
-		</thead>
-		<tbody>
-			@foreach (var booking in Model)
-			{
-				<tr>
-					<td>@booking.BookedAt.ToString("dd MMM yyyy HH:mm")</td>
-					<td>@booking.Trip?.DepartureDate.ToString("dd MMM yyyy")</td>
-					<td>@booking.Trip?.DepartureTime.ToString(@"hh\:mm")</td>
-					<td>@booking.Trip?.FromLocation</td>
-					<td>@booking.Trip?.ToLocation</td>
-					<td>@(booking.Trip?.Driver?.Username ?? "-")</td>
-					<td>$@booking.TotalCost.ToString("F2")</td>
-					<td>
-						@if (booking.Status == "Confirmed")
-						{
-							<span class="badge bg-success">Confirmed</span>
-						}
-						else
-						{
-							<span class="badge bg-secondary">Cancelled</span>
-						}
-					</td>
-					<td>
-						@if (booking.Status == "Confirmed")
-						{
-							<form asp-action="Cancel" asp-route-id="@booking.BookingId" method="post" class="d-inline">
-								<button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Cancel this booking?');">Cancel
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Booked On</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Driver</th>
+                <th>Cost</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
 
-								</button>
-							</form>
-						}
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>	
+        <tbody>
+            @foreach (var booking in Model)
+            {
+                <tr>
+                    <td>
+                        @booking.BookedAt.ToString("dd MMM yyyy HH:mm")
+                    </td>
+
+                    <td>
+                        @booking.Trip?.DepartureDate.ToString("dd MMM yyyy")
+                    </td>
+
+                    <td>
+                        @booking.Trip?.DepartureTime.ToString("hh\\:mm")
+                    </td>
+
+                    <td>
+                        @booking.Trip?.FromLocation
+                    </td>
+
+                    <td>
+                        @booking.Trip?.ToLocation
+                    </td>
+
+                    <td>
+                        @(booking.Trip?.Driver?.Username ?? "-")
+                    </td>
+
+                    <td>
+                        $@booking.TotalCost.ToString("F2")
+                    </td>
+
+                    <td>
+                        @if (booking.Status == "Confirmed")
+                        {
+                            <span class="badge bg-success">
+                                Confirmed
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">
+                                Cancelled
+                            </span>
+                        }
+                    </td>
+
+                    <td>
+                        @if (booking.Status == "Confirmed")
+                        {
+                            <form asp-controller="Booking"
+                                  asp-action="Cancel"
+                                  method="post"
+                                  class="d-inline">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden"
+                                       name="id"
+                                       value="@booking.BookingId" />
+
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Cancel this booking?');">
+                                    Cancel
+                                </button>
+
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }

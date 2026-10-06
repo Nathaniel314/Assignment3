@@ -10,7 +10,7 @@ namespace Rider_and_Driver.Controllers
     {
         private readonly ApplicationDbContext _db;
 
-        public TripController(ApplicationDbContext db)
+        public TripController(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }

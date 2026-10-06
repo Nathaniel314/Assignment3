@@ -25,5 +25,9 @@ namespace Rider_and_Driver.Models
         public string Role { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        // Relationship with the driver and rider
+        public Rider? Rider { get; set; }
+        public Driver? Driver { get; set; }
     }
 }

@@ -12,6 +12,8 @@ namespace Rider_and_Driver.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Trip> Trips { get; set; }
         public DbSet<Booking> Bookings { get; set; }
+        public DbSet<Rider> Riders { get; set; }
+        public DbSet<Driver> Drivers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

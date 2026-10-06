@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rider_and_Driver.Models
 {
-    public class Rider
+    public class Driver
     {
         [Key]
         [ForeignKey("User")]
@@ -14,6 +14,10 @@ namespace Rider_and_Driver.Models
 
         [StringLength(100)]
         public string? Address { get; set; }
+
+        [Required]
+        [StringLength(20)]
+        public string? LicenseNumber { get; set; }
 
         public User? User { get; set; }
     }
