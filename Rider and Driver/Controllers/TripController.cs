@@ -69,17 +69,81 @@ namespace Rider_and_Driver.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(
+            string? FromLocation,
+            string? ToLocation,
+            DateTime? DepartureDate,
+            string? SortBy,
+            string? SortOrder )
         {
             var driverId = HttpContext.Session.GetInt32("UserId");
+
             if (driverId == null)
                 return RedirectToAction("login", "Account");
 
             var trips = _db.Trips
-                .Where (t=> t.DriverUserId == driverId && t.Status == "Active")
-                .OrderBy(t => t.DepartureDate)
-                .ThenBy(t => t.DepartureTime)
-                .ToList();
+                .Where(t => t.DriverUserId == driverId && t.Status == "Active");
+                
+                //This was the default order and sort that the application already does by Mehakpreet code
+                //.OrderBy(t => t.DepartureDate)
+                //.ThenBy(t => t.DepartureTime)
+                //.ToList();
+
+            //Searching Departure Location code
+            if (!string.IsNullOrWhiteSpace(FromLocation))
+            {
+                trips = trips.Where(t => t.FromLocation.Contains(FromLocation));
+            }
+
+            //Search Destination
+            if (!string.IsNullOrWhiteSpace(ToLocation))
+            {
+                trips = trips.Where(t => t.ToLocation.Contains(ToLocation));
+            }
+
+            //Search by Departyre Date 
+            if (DepartureDate.HasValue)
+            {
+                trips = trips.Where(t => t.DepartureDate.Date == DepartureDate.Value.Date);
+            }
+
+            //Sorting
+            //Sort Cost
+            if (SortBy == "cost")
+            {
+                if (SortOrder == "desc")
+                    trips = trips.OrderByDescending (t => t.Cost);
+                else
+                    trips = trips.OrderBy (t => t.Cost);
+            }
+            //Sort Date
+            else if (SortBy == "date")
+            {
+                if (SortOrder == "desc")
+                    trips = trips.OrderByDescending(t => t.DepartureDate)
+                        .ThenByDescending(t => t.DepartureTime);
+                else
+                    trips = trips.OrderBy(t => t.DepartureDate)
+                        .ThenBy(t => t.DepartureTime);
+            }
+            //Sort Seats
+            else if (SortBy == "seats")
+            {
+                if (SortOrder == "desc")
+                    trips = trips.OrderByDescending(t => t.SeatsAvailable);
+                else
+                    trips = trips.OrderBy(t => t.SeatsAvailable);
+            }
+            //Default Sort
+            else
+            {
+                trips = trips
+                    .OrderBy(t => t.DepartureDate)
+                    .ThenBy(t => t.DepartureTime);
+            }
+
+            trips.ToList();
+
 
             var bookingCounts= _db.Bookings
                 .Where(b => b.Status == "Confirmed")

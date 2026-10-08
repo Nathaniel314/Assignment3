@@ -61,6 +61,95 @@
             <h2>Available Rides</h2>
 
 
+            <!-- Search and Filter -->
+
+            <h3>Sort Ride and Order</h3>
+
+            <form asp-controller="RiderOnly"
+                  asp-action="Index"
+                  method="get">
+
+                <!-- Keep the selected calendar date -->
+                <input type="hidden"
+                       name="date"
+                       value="@ViewBag.SelectedDate.ToString("yyyy-MM-dd")" />
+
+                <!-- Search: Depart From -->
+
+                <div>
+                    <label>Depart From</label>
+
+                    <input type="text"
+                        name="FromLocation"
+                        value="@ViewBag.FromLocation"
+                        placeholder="Departure" />
+
+                </div>
+
+
+                <!-- Search: Going To -->
+
+                <div>
+                    <label>Going To</label>
+
+                    <input type="text"
+                        name="ToLocation"
+                        value="@ViewBag.ToLocation"
+                        placeholder="Destination" />
+
+                </div>
+
+
+                <div>
+                    <label>Sort By</label>
+
+                    <select name="SortBy">
+
+                        <option value=""
+                                selected="@(ViewBag.SortBy == "" || ViewBag.SortBy == null)">
+                            Departure Time
+                        </option>
+
+                        <option value="Cost"
+                                selected="@(ViewBag.SortBy == "Cost")">
+                            Cost
+                        </option>
+
+                        <option value="SeatsAvailable"
+                                selected="@(ViewBag.SortBy == "SeatsAvailable")">
+                            Seats Available
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div>
+                    <label>Order</label>
+
+                    <select name="SortOrder">
+
+                        <option value="Ascending"
+                                selected="@(ViewBag.SortOrder == "Ascending" || ViewBag.SortOrder == null)">
+                            Lowest / Earliest
+                        </option>
+
+                        <option value="Descending"
+                                selected="@(ViewBag.SortOrder == "Descending")">
+                            Highest / Latest
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <button type="submit">
+                    Apply
+                </button>
+
+            </form>
             <p>
                 Rides for:
 

@@ -14,6 +14,8 @@ namespace Rider_and_Driver.Controllers
             _db = db;
         }
 
+     
+
         public override void OnActionExecuting(
             ActionExecutingContext context)
         {
@@ -54,7 +56,11 @@ namespace Rider_and_Driver.Controllers
 
 
         [HttpGet]
-        public IActionResult Index(DateTime? date)
+        public IActionResult Index(DateTime? date,
+            string? FromLocation,
+            string? ToLocation,
+            string? SortBy,
+            string? SortOrder)
         {
             DateTime selectedDate =
                 date ?? DateTime.Today;
@@ -64,13 +70,66 @@ namespace Rider_and_Driver.Controllers
                 .Where(t =>
                     t.DepartureDate.Date == selectedDate.Date &&
                     t.Status == "Active" &&
-                    t.SeatsAvailable > 0)
-                .OrderBy(t => t.DepartureTime)
-                .ToList();
+                    t.SeatsAvailable > 0);
+                //.OrderBy(t => t.DepartureTime);
+            //Not to call list yet since it must sort first so i commented this line of Code that Mehakpreet did
+                //.ToList();
+
+            //Search the Departure Location
+            if (!string.IsNullOrWhiteSpace(FromLocation))
+            {
+                rides = rides.Where(t => t.FromLocation.Contains(FromLocation));
+            }
+
+            //Search Destination
+            if (!string.IsNullOrWhiteSpace(ToLocation))
+            {
+                rides = rides.Where(t => t.ToLocation.Contains(ToLocation));
+            }
+
+            //Sort Cost
+            if (SortBy == "Cost")
+            {
+                if (SortOrder == "Ascending")
+                {
+                    rides = rides.OrderBy(t => t.Cost);
+                }
+                else
+                {
+                    rides = rides.OrderByDescending (t => t.Cost);
+                }
+            }
+
+            //Sort Seats available for the ride
+            else if (SortBy == "SeatsAvailable")
+            {
+                if (SortOrder == "Ascending")
+                {
+                    rides = rides.OrderBy (t => t.SeatsAvailable);
+                }
+                else
+                {
+                    rides = rides.OrderByDescending (t => t.SeatsAvailable);
+                }
+            }
+
+            //Default Sorting by Departure Time
+            else
+            {
+                rides = rides.OrderBy(t => t.DepartureDate);
+            }
+
+            var ridesList = rides.ToList();
+                
 
             ViewBag.SelectedDate = selectedDate;
+            ViewBag.FromLocation = FromLocation; 
+            ViewBag.ToLocation = ToLocation;
+            ViewBag.SortBy = SortBy; 
+            ViewBag.SortOrder = SortOrder;
+            
 
-            return View(rides);
+            return View(ridesList);
         }
     }
 }
