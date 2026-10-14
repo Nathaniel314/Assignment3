@@ -51,6 +51,13 @@ body {
     min-height: 120px;
 }
 
+/* =========================
+   PNG LOGO
+   ========================= */
+.navbar-logo {
+    height: 65px;
+    width: auto;
+}
 
 /* =========================
    DRIVER HOMEPAGE

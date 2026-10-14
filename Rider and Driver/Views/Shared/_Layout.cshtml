@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Rider_and_Driver</title>
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/BootStrap.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Rider_and_Driver.styles.css" asp-append-version="true" />
 </head>
@@ -36,7 +36,9 @@
                     <a class="navbar-brand"
                        asp-controller="DriverOnly"
                        asp-action="Index">
-                        Rider_and_Driver
+                        <img src="~/css/logo.png"
+                            alt="Rider and Driver"
+                            class="navbar-logo" />
                     </a>
                 }
                 else if (Context.Session.GetString("Role") == "Rider")
@@ -44,7 +46,9 @@
                     <a class="navbar-brand"
                        asp-controller="RiderOnly"
                        asp-action="Index">
-                        Rider_and_Driver
+                        <img src="~/css/logo.png"
+                            alt="Rider and Driver"
+                            class="navbar-logo" />
                     </a>
                 }
                 else
@@ -52,7 +56,9 @@
                     <a class="navbar-brand"
                        asp-controller="Home"
                        asp-action="Index">
-                        Rider_and_Driver
+                        <img src="~/css/logo.png"
+                            alt="Rider and Driver"
+                            class="navbar-logo" />
                     </a>
                 }
 
@@ -213,7 +219,8 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 
     <script src="~/js/site.js" asp-append-version="true"></script>
 
