@@ -223,6 +223,90 @@ namespace Rider_and_Driver.Controllers
             TempData["Success"] = $"Trip cancelled ({activeBookings.Count} booking(s) cancelled)";
             return RedirectToAction("Index");
         }
+        //Display the edit form
+        //Edit Actions
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var driverId = HttpContext.Session.GetInt32("UserId");
+
+            if (driverId == null)
+                return RedirectToAction("Login", "Account");
+
+            var trip = _db.Trips.FirstOrDefault(t => t.TripId == id);
+
+            if (trip == null)
+                return NotFound();
+
+            // Drivers can only edit their own trips.
+            if (trip.DriverUserId != driverId)
+            {
+                TempData["Error"] = "You can only edit your own trips.";
+                return RedirectToAction("Index");
+            }
+
+            LoadDropdowns();
+
+            return View(trip);
+        }
+        //Save the updated information
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Trip updatedTrip)
+        {
+            var driverId = HttpContext.Session.GetInt32("UserId");
+
+            if (driverId == null)
+                return RedirectToAction("Login", "Account");
+
+            var existingTrip = _db.Trips
+                .FirstOrDefault(t => t.TripId == id);
+
+            if (existingTrip == null)
+                return NotFound();
+
+            // Check that this trip belongs to the logged-in driver.
+            if (existingTrip.DriverUserId != driverId)
+            {
+                TempData["Error"] = "You can only edit your own trips.";
+                return RedirectToAction("Index");
+            }
+
+            if (updatedTrip.FromLocation == updatedTrip.ToLocation)
+            {
+                ModelState.AddModelError(
+                    "ToLocation",
+                    "Destination must be different from departure location.");
+            }
+
+            if (updatedTrip.DepartureDate.Date < DateTime.Today)
+            {
+                ModelState.AddModelError(
+                    "DepartureDate",
+                    "Departure date cannot be in the past.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                LoadDropdowns();
+                return View(updatedTrip);
+            }
+
+            // Replace the old details with the new details.
+            existingTrip.DepartureDate = updatedTrip.DepartureDate;
+            existingTrip.DepartureTime = updatedTrip.DepartureTime;
+            existingTrip.FromLocation = updatedTrip.FromLocation;
+            existingTrip.ToLocation = updatedTrip.ToLocation;
+            existingTrip.SeatsAvailable = updatedTrip.SeatsAvailable;
+            existingTrip.Cost = updatedTrip.Cost;
+            existingTrip.NumberPlate = updatedTrip.NumberPlate;
+
+            _db.SaveChanges();
+
+            TempData["Success"] = "Trip updated successfully!";
+
+            return RedirectToAction("Details", new { id = existingTrip.TripId });
+        }
 
         private void LoadDropdowns()
         {

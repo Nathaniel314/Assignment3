@@ -29,7 +29,8 @@
 		<div class="mt-3">
 			<a asp-action="Index" class="btn btn-secondary btn-sm">Back to My Trips</a>
 			<a asp-action="Create" class="btn btn-outline-primary btn-sm">Create Another Trip</a>
-
+			<!-- This is the button for update trips -->
+			<a asp-action="Edit" asp-route-id="@Model.TripId" class="btn btn-outline-primary btn-sm"> Update </a>
 			<form asp-action="Cancel" asp-route-id="@Model.TripId" method="post" class="d-inline"
 				  onsubmit="return confirm('Cancel this trip? All confirmed bookings will be cancelled.');">
 				<button type="submit" class="btn btn-outline-danger btn-sm">Cancel Trip</button>
