@@ -1,0 +1,24 @@
+<Project Sdk="MSTest.Sdk/3.6.4">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<UseVSTest>true</UseVSTest>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory"
+						  Version="8.0.31" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Rider and Driver\Rider and Driver.csproj" />
+	</ItemGroup>
+
+</Project>
