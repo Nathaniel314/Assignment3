@@ -1,37 +1,36 @@
-﻿@model Rider_and_Driver.Models.Trip
+﻿```cshtml
+@model Rider_and_Driver.Models.Trip
 
 <div class="driver-home">
-
     <div class="driver-content">
 
+        <!-- Display the driver homepage heading and welcome message -->
         <h1>Driver Homepage</h1>
-
         <p>Welcome, Driver!</p>
 
-
-        <!-- Calendar -->
-
+        <!-- Calendar section for selecting the ride departure date -->
         <div class="calendar-box">
-
             <div class="calendar">
 
+                <!-- Calendar header containing previous month, current month and next month buttons -->
                 <div class="calendar-header">
 
+                    <!-- Button to navigate to the previous month -->
                     <button type="button" id="prevMonth">
                         &lt;
                     </button>
 
+                    <!-- JavaScript displays the current month and year here -->
                     <h2 id="monthYear"></h2>
 
+                    <!-- Button to navigate to the next month -->
                     <button type="button" id="nextMonth">
                         &gt;
                     </button>
-
                 </div>
 
-
+                <!-- Display the weekday names, starting with Monday -->
                 <div class="calendar-weekdays">
-
                     <div>Mo</div>
                     <div>Tu</div>
                     <div>We</div>
@@ -39,47 +38,41 @@
                     <div>Fr</div>
                     <div>Sa</div>
                     <div>Su</div>
-
                 </div>
 
-
+                <!-- JavaScript dynamically generates the calendar dates inside this container -->
                 <div class="calendar-days" id="calendarDays">
                 </div>
 
             </div>
-
         </div>
 
-
-        <!-- Ride Details Form -->
-
+        <!-- Ride details form displayed after the driver selects a calendar date -->
         <div class="ride-form-box" id="rideForm">
 
             <h2>Enter Ride Details</h2>
 
+            <!-- Submit ride details to the CreateTrip action in DriverOnlyController -->
             <form asp-controller="DriverOnly"
                   asp-action="CreateTrip"
                   method="post">
 
+                <!-- Generate an anti-forgery token to help protect the form against CSRF attacks -->
                 @Html.AntiForgeryToken()
 
-
-                <!-- Selected Date -->
-
+                <!-- Store the selected calendar date in the form for submission -->
                 <input type="hidden"
                        asp-for="DepartureDate"
                        id="selectedDate" />
 
+                <!-- Display the date selected by the driver -->
                 <div class="selected-date">
                     Selected Date:
                     <strong id="selectedDateText"></strong>
                 </div>
 
-
-                <!-- Departure Time -->
-
+                <!-- Departure time input with validation feedback -->
                 <div class="mb-3">
-
                     <label asp-for="DepartureTime"
                            class="form-label">
                         Departure Time
@@ -89,17 +82,14 @@
                            type="time"
                            class="form-control" />
 
+                    <!-- Display validation errors for departure time -->
                     <span asp-validation-for="DepartureTime"
                           class="text-danger">
                     </span>
-
                 </div>
 
-
-                <!-- Depart From -->
-
+                <!-- Input for the ride's departure location -->
                 <div class="mb-3">
-
                     <label asp-for="FromLocation"
                            class="form-label">
                         Depart From
@@ -109,17 +99,14 @@
                            class="form-control"
                            placeholder="Enter departure location" />
 
+                    <!-- Display validation errors for departure location -->
                     <span asp-validation-for="FromLocation"
                           class="text-danger">
                     </span>
-
                 </div>
 
-
-                <!-- Going To -->
-
+                <!-- Input for the ride's destination -->
                 <div class="mb-3">
-
                     <label asp-for="ToLocation"
                            class="form-label">
                         Going To
@@ -129,22 +116,20 @@
                            class="form-control"
                            placeholder="Enter destination" />
 
+                    <!-- Display validation errors for destination -->
                     <span asp-validation-for="ToLocation"
                           class="text-danger">
                     </span>
-
                 </div>
 
-
-                <!-- Seats -->
-
+                <!-- Input for the number of available seats -->
                 <div class="mb-3">
-
                     <label asp-for="SeatsAvailable"
                            class="form-label">
                         Seats Available
                     </label>
 
+                    <!-- Restrict the entered seat count to between 1 and 10 -->
                     <input asp-for="SeatsAvailable"
                            type="number"
                            class="form-control"
@@ -152,22 +137,20 @@
                            max="10"
                            placeholder="Enter number of seats" />
 
+                    <!-- Display validation errors for available seats -->
                     <span asp-validation-for="SeatsAvailable"
                           class="text-danger">
                     </span>
-
                 </div>
 
-
-                <!-- Cost -->
-
+                <!-- Input for the cost of each seat -->
                 <div class="mb-3">
-
                     <label asp-for="Cost"
                            class="form-label">
                         Cost per Seat ($)
                     </label>
 
+                    <!-- Allow decimal values and set the permitted cost range -->
                     <input asp-for="Cost"
                            type="number"
                            step="0.01"
@@ -176,17 +159,14 @@
                            max="25"
                            placeholder="Enter cost per seat" />
 
+                    <!-- Display validation errors for ride cost -->
                     <span asp-validation-for="Cost"
                           class="text-danger">
                     </span>
-
                 </div>
 
-
-                <!-- Number Plate -->
-
+                <!-- Input for the vehicle registration number -->
                 <div class="mb-3">
-
                     <label asp-for="NumberPlate"
                            class="form-label">
                         Number Plate
@@ -196,38 +176,35 @@
                            class="form-control"
                            placeholder="Enter vehicle number plate" />
 
+                    <!-- Display validation errors for the number plate -->
                     <span asp-validation-for="NumberPlate"
                           class="text-danger">
                     </span>
-
                 </div>
 
-
-                <!-- Submit -->
-
+                <!-- Submit the completed ride details -->
                 <button type="submit"
                         class="btn btn-primary">
                     Create Ride
                 </button>
 
             </form>
-
         </div>
 
     </div>
-
 </div>
-
 
 @section Scripts {
 
+    <!-- Load client-side validation scripts for form validation -->
     <partial name="_ValidationScriptsPartial" />
-
 
     <script>
 
+        // Store the date currently displayed in the calendar
         let currentDate = new Date();
 
+        // Get references to the HTML elements that JavaScript will update
         const monthYear =
             document.getElementById("monthYear");
 
@@ -243,7 +220,7 @@
         const selectedDateText =
             document.getElementById("selectedDateText");
 
-
+        // Store month names for displaying the calendar heading and selected date
         const months = [
             "January",
             "February",
@@ -259,38 +236,34 @@
             "December"
         ];
 
-
+        // Generate the calendar for the currently selected month
         function createCalendar() {
 
+            // Clear the previous calendar dates before generating new ones
             calendarDays.innerHTML = "";
 
+            // Get the year and month currently displayed
             const year =
                 currentDate.getFullYear();
 
             const month =
                 currentDate.getMonth();
 
-
+            // Update the calendar heading with the month name and year
             monthYear.textContent =
                 months[month] + " " + year;
 
-
-            // Get first day of month
-
+            // Find the weekday of the first day of the month
             let firstDay =
                 new Date(year, month, 1).getDay();
 
-
-            // Make Monday the first day
-
+            // Convert JavaScript's Sunday-first numbering to Monday-first numbering
             firstDay =
                 firstDay === 0
                     ? 6
                     : firstDay - 1;
 
-
-            // Get number of days
-
+            // Calculate the total number of days in the current month
             const daysInMonth =
                 new Date(
                     year,
@@ -298,83 +271,69 @@
                     0
                 ).getDate();
 
-
-            // Add empty spaces
-
+            // Add empty calendar cells before the first date
+            // so dates align with their correct weekdays
             for (let i = 0; i < firstDay; i++) {
 
+                // Create an empty calendar cell
                 const emptyDay =
                     document.createElement("div");
 
+                // Apply the calendar-day and empty CSS classes
                 emptyDay.classList.add(
                     "calendar-day",
                     "empty"
                 );
 
-                calendarDays.appendChild(
-                    emptyDay
-                );
+                // Add the empty cell to the calendar
+                calendarDays.appendChild(emptyDay);
             }
 
-
-            // Add dates
-
+            // Generate a calendar cell for every day in the month
             for (
                 let day = 1;
                 day <= daysInMonth;
                 day++
             ) {
 
+                // Create a new element for the calendar date
                 const dayElement =
                     document.createElement("div");
 
-
+                // Apply the calendar-day CSS class
                 dayElement.classList.add(
                     "calendar-day"
                 );
 
+                // Display the date number inside the calendar cell
+                dayElement.textContent = day;
 
-                dayElement.textContent =
-                    day;
-
-
+                // Add a click event so the driver can select a date
                 dayElement.addEventListener(
                     "click",
                     function () {
 
-                        // Remove previous selection
-
+                        // Remove the selected class from all calendar dates
+                        // so that only one date is highlighted at a time
                         document
-                            .querySelectorAll(
-                                ".calendar-day"
-                            )
+                            .querySelectorAll(".calendar-day")
                             .forEach(function (d) {
 
-                                d.classList.remove(
-                                    "selected"
-                                );
-
+                                d.classList.remove("selected");
                             });
 
+                        // Highlight the date clicked by the driver
+                        dayElement.classList.add("selected");
 
-                        // Select date
-
-                        dayElement.classList.add(
-                            "selected"
-                        );
-
-
-                        // Create date value
-
+                        // Convert the month and day into two-digit values
+                        // to create a date in YYYY-MM-DD format
                         const monthNumber =
-                            String(month + 1)
-                                .padStart(2, "0");
+                            String(month + 1).padStart(2, "0");
 
                         const dayNumber =
-                            String(day)
-                                .padStart(2, "0");
+                            String(day).padStart(2, "0");
 
-
+                        // Build the selected date value for the form
                         const dateValue =
                             year +
                             "-" +
@@ -382,15 +341,11 @@
                             "-" +
                             dayNumber;
 
+                        // Store the selected date in the hidden form field
+                        // so it can be submitted with the ride details
+                        selectedDate.value = dateValue;
 
-                        // Set hidden date
-
-                        selectedDate.value =
-                            dateValue;
-
-
-                        // Display selected date
-
+                        // Display the selected date in a readable format
                         selectedDateText.textContent =
                             day +
                             " " +
@@ -398,71 +353,59 @@
                             " " +
                             year;
 
+                        // Display the ride details form after a date is selected
+                        rideForm.style.display = "block";
 
-                        // Show ride form
-
-                        rideForm.style.display =
-                            "block";
-
-
-                        // Scroll to form
-
+                        // Scroll smoothly to the ride details form
                         rideForm.scrollIntoView({
                             behavior: "smooth",
                             block: "start"
                         });
-
                     }
                 );
 
-
-                calendarDays.appendChild(
-                    dayElement
-                );
+                // Add the date cell to the calendar
+                calendarDays.appendChild(dayElement);
             }
         }
 
-
-        // Previous month
-
+        // Navigate to the previous month when the previous button is clicked
         document
             .getElementById("prevMonth")
             .addEventListener(
                 "click",
                 function () {
 
+                    // Move the displayed date back by one month
                     currentDate.setMonth(
                         currentDate.getMonth() - 1
                     );
 
+                    // Regenerate the calendar for the previous month
                     createCalendar();
-
                 }
             );
 
-
-        // Next month
-
+        // Navigate to the next month when the next button is clicked
         document
             .getElementById("nextMonth")
             .addEventListener(
                 "click",
                 function () {
 
+                    // Move the displayed date forward by one month
                     currentDate.setMonth(
                         currentDate.getMonth() + 1
                     );
 
+                    // Regenerate the calendar for the next month
                     createCalendar();
-
                 }
             );
 
-
-        // Load calendar
-
+        // Generate the calendar when the page first loads
         createCalendar();
 
     </script>
-
 }
+```

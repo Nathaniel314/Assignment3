@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rider_and_Driver.Data;
 using Rider_and_Driver.Models;
 
 namespace Rider_and_Driver.Controllers
 {
+    [Authorize]
     public class BookingController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -22,6 +24,7 @@ namespace Rider_and_Driver.Controllers
         //handles the creation of new bookings
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public IActionResult Book(int tripId)
         {
             //authenication and authorisation checks
