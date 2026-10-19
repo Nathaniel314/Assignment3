@@ -7,6 +7,7 @@
 }
 
 <h1>Transaction History</h1>
+<!-- Subtitle changes based on role-->
 <p class="text-muted">
 	@if (isRider)
 	{
@@ -68,11 +69,13 @@ else
 			</tr>
 		</thead>
 		<tbody>
+			<!-- Loop through each booking-->
 			@foreach (var booking in Model)
 			{
 				<tr>
 					<td>@booking.BookedAt.ToString("dd MMM yyyy HH:mm")</td>
 
+					<!-- Show Driver name for Riders or Riders name for Drivers-->
 					@if (isRider)
 					{
 						<td>@(booking.Trip?.Driver?.Username ?? "-")</td>
@@ -81,6 +84,7 @@ else
 					{
 						<td>@(booking.Rider?.Username ?? "-")</td>
 					}
+					<!-- Route-->
 					<td>
 						@if (booking.Trip != null)
 						{
@@ -93,6 +97,7 @@ else
 							@:-
 						}
 					</td>
+					<!-- Trip Date and Time -->
 					<td>
 						@if (booking.Trip != null)
 						{
@@ -103,6 +108,7 @@ else
 							<text>-</text>
 						}
 					</td>
+					<!-- Cost and Status Badge-->
 					<td>$@booking.TotalCost.ToString("F2")</td>
 					<td>
 						@if (booking.Status == "Confirmed")

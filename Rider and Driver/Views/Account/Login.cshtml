@@ -1,11 +1,13 @@
 ﻿@model Rider_and_Driver.Models.LoginViewModel
 
+<!-- The login page and login box -->
 <div class="login-page">
 
     <div class="login-box">
 
         <h1>Login</h1>
 
+        <!-- Displays a server side error-->
         @if (ViewBag.Error != null)
         {
             <div class="alert alert-danger">
@@ -13,10 +15,12 @@
             </div>
         }
 
+        <!-- Form post to the account/login action -->
         <form asp-action="Login" method="post">
 
             <div class="mb-3">
 
+                <!-- username feid-->
                 <label asp-for="Username" class="form-label"></label>
 
                 <input asp-for="Username"
@@ -28,7 +32,7 @@
 
             </div>
 
-
+            <!-- Password field-->
             <div class="mb-3">
 
                 <label asp-for="Password"
@@ -44,12 +48,13 @@
 
             </div>
 
-
+            <!-- submit button and link to registry-->
             <button type="submit"
                     class="btn btn-primary">
                 Login
             </button>
 
+            <!-- Loads client side validation-->
             <a asp-controller="Account"
                asp-action="Register"
                class="ms-3">

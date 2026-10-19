@@ -5,6 +5,7 @@ namespace Rider_and_Driver.Models
 {
     public class Trip
     {
+        //Represents a Trip created by a Driver.
         [Key]
         public int TripId { get; set; }
 

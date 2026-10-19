@@ -4,6 +4,7 @@ namespace Rider_and_Driver.Models
 {
     public class User
     {
+        //the central model used for authorisation and role management
         [Key]
         public int UserId { get; set; }
 

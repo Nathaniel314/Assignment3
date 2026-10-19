@@ -5,6 +5,7 @@ namespace Rider_and_Driver.Models
 {
     public class Rider
     {
+        //Represents a Rider profile
         [Key]
         [ForeignKey("User")]
         public int UserId { get; set; }

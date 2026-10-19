@@ -14,11 +14,13 @@ namespace Rider_and_Driver.Controllers
         {
             _db = db;
         }
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             var username=HttpContext.Session.GetString("Username");
             var role = HttpContext.Session.GetString("Role");
 
+            //Check if user is logged in
             if (string.IsNullOrEmpty(username))
             {
                 var returnUrl= HttpContext.Request.Path + HttpContext.Request.QueryString;
@@ -26,6 +28,7 @@ namespace Rider_and_Driver.Controllers
                 return;
             }
 
+            //Vhecks if Driver
             if (role != "Driver")
             {
                 TempData["Error"] = "Only Drivers can access that page.";
@@ -35,10 +38,13 @@ namespace Rider_and_Driver.Controllers
 
             base.OnActionExecuting(context);
         }
+        //Displays the drivers hompage
         public IActionResult Index()
         {
             return View();
         }
+
+        //Handles the creation of a new trip
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CreateTrip(Trip trip)
@@ -50,6 +56,7 @@ namespace Rider_and_Driver.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            //Forces the driverID to be the current logged in user to prevent drivers creating other drivers trips
             trip.DriverUserId = userId.Value;
 
             ModelState.Remove("DriverUserId");
@@ -59,9 +66,11 @@ namespace Rider_and_Driver.Controllers
                 return View("Index", trip);
             }
 
+            //Sets defualt values
             trip.Status = "Active";
             trip.CreatedAt = DateTime.Now;
 
+            //saves to data base
             _db.Trips.Add(trip);
             _db.SaveChanges();
 

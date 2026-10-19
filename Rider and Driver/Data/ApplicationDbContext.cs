@@ -9,6 +9,7 @@ namespace Rider_and_Driver.Data
         { 
         }
 
+        //Entity framework uses them to run queries and save data
         public DbSet<User> Users { get; set; }
         public DbSet<Trip> Trips { get; set; }
         public DbSet<Booking> Bookings { get; set; }

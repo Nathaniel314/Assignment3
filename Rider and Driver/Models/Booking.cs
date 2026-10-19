@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Rider_and_Driver.Models
 {
+    //Represents a booking made by a rider for a specific trip
     public class Booking
     {
         [Key]

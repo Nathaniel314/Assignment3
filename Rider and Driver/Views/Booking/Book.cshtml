@@ -9,9 +9,13 @@
 
 <div class="card" style="max-width: 600px;">
 	<div class="card-body">
+
+		<!-- Trip route-->
 		<h4>
 			@Model.FromLocation &rArr; @Model.ToLocation
 		</h4>
+
+		<!-- Trip detials summary-->
 		<p class="card-text">
 			<strong>Date:</strong> @Model.DepartureDate.ToString("dd MMM yyyy")<br />
 			<strong>Time:</strong> @Model.DepartureTime.ToString(@"hh\:mm")<br />
@@ -22,7 +26,7 @@
 		</p>
 
 		<hr />
-
+		<!-- Confirm boooking form-->
 		<form asp-action="Book" asp-route-itemid="@Model.TripId" method="post">
 			<button type="submit" class="btn btn-success">Confirm Booking</button>
 			<a asp-action="Browse" class="btn btn-secondary">Back to Browse</a>

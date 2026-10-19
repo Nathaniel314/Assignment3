@@ -19,10 +19,12 @@ namespace Rider_and_Driver.Controllers
         // BOOK RIDE
         // =========================
 
+        //handles the creation of new bookings
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Book(int tripId)
         {
+            //authenication and authorisation checks
             var username =
                 HttpContext.Session.GetString("Username");
 
@@ -40,7 +42,7 @@ namespace Rider_and_Driver.Controllers
                     "Account");
             }
 
-
+            //Ensure only usres with rider can book
             if (role != "Rider")
             {
                 TempData["Error"] =
@@ -62,7 +64,7 @@ namespace Rider_and_Driver.Controllers
                     "RiderOnly");
             }
 
-
+            // trip validatiom
             var trip = _db.Trips
                 .FirstOrDefault(t =>
                     t.TripId == tripId);
@@ -100,7 +102,7 @@ namespace Rider_and_Driver.Controllers
                     "RiderOnly");
             }
 
-
+            //Ensures the rider hasnt all ready book a seat on that ride
             var alreadyBooked =
                 _db.Bookings.Any(
                     b =>
@@ -121,7 +123,7 @@ namespace Rider_and_Driver.Controllers
                     "RiderOnly");
             }
 
-
+            //Creates new booking
             var booking = new Booking
             {
                 TripId = trip.TripId,
@@ -139,10 +141,10 @@ namespace Rider_and_Driver.Controllers
                     DateTime.Now
             };
 
-
+            //Reduces avaliblity to prevent overbooking
             trip.SeatsAvailable--;
 
-
+            //Save Transaction to database
             _db.Bookings.Add(booking);
 
             _db.SaveChanges();
@@ -161,6 +163,7 @@ namespace Rider_and_Driver.Controllers
         // MY BOOKINGS
         // =========================
 
+        //Displays a list of made by the current looged in driver
         [HttpGet]
         public IActionResult MyBookings()
         {
@@ -175,7 +178,7 @@ namespace Rider_and_Driver.Controllers
                     "Account");
             }
 
-
+            // Queries the database for booking belongng to rider
             var bookings = _db.Bookings
                 .Include(b => b.Trip)
                 .ThenInclude(t => t.Driver)
@@ -197,6 +200,7 @@ namespace Rider_and_Driver.Controllers
         // CANCEL BOOKING
         // =========================
 
+        //allows a rider to cancel their booking 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Cancel(int id)
@@ -212,7 +216,7 @@ namespace Rider_and_Driver.Controllers
                     "Account");
             }
 
-
+            //A rider cannot cancel some elses booking by guessing ID
             var booking = _db.Bookings
                 .Include(b => b.Trip)
                 .FirstOrDefault(
@@ -232,7 +236,7 @@ namespace Rider_and_Driver.Controllers
                     "MyBookings");
             }
 
-
+            //Changes booking status
             if (booking.Status == "Cancelled")
             {
                 TempData["Error"] =

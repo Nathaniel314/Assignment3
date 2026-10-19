@@ -15,6 +15,7 @@ namespace Rider_and_Driver.Controllers
             _db = db;
         }
 
+        //Hard coded lest of valide locations for drop down
         private static readonly List<string> Locations = new()
         {
             "Lower Hutt",
@@ -25,6 +26,7 @@ namespace Rider_and_Driver.Controllers
             "Paraparaumu"
         };
 
+        //Displays the form to create trip
         [HttpGet]
         public IActionResult Create()
         {
@@ -32,6 +34,7 @@ namespace Rider_and_Driver.Controllers
             return View();
         }
 
+        //Handles the sumbission of the new trip
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Trip trip)
@@ -42,6 +45,7 @@ namespace Rider_and_Driver.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            //validation logic
             if (trip.FromLocation == trip.ToLocation)
             {
                 ModelState.AddModelError("ToLocation", "Destination must be different from Departure location");
@@ -58,6 +62,7 @@ namespace Rider_and_Driver.Controllers
                 return View(trip);
             }
 
+            //security: Forces the driver ID to be the current logged in driver 
             trip.DriverUserId = userId.Value;
             trip.CreatedAt = DateTime.Now;
 
@@ -68,6 +73,7 @@ namespace Rider_and_Driver.Controllers
             return RedirectToAction("Index");
         }
 
+        //Displays a list of the logged in drivers trips
         [HttpGet]
         public IActionResult Index(
             string? FromLocation,
@@ -81,6 +87,7 @@ namespace Rider_and_Driver.Controllers
             if (driverId == null)
                 return RedirectToAction("login", "Account");
 
+            //fetches active trips owned by logged in driver
             var trips = _db.Trips
                 .Where(t => t.DriverUserId == driverId && t.Status == "Active");
                 
@@ -144,7 +151,7 @@ namespace Rider_and_Driver.Controllers
 
             trips.ToList();
 
-
+            //calculates the number of confirmed bookins for each trip to display in table
             var bookingCounts= _db.Bookings
                 .Where(b => b.Status == "Confirmed")
                 .GroupBy(b => b.TripId)
@@ -155,6 +162,7 @@ namespace Rider_and_Driver.Controllers
             return View(trips);
         }
 
+        //displays the information about a specfic trip and its bookings
         [HttpGet]
         public IActionResult Details(int id)
         {
@@ -169,12 +177,14 @@ namespace Rider_and_Driver.Controllers
             if (trip == null)
                 return NotFound();
 
+            //Ensures the trip belongs to the logged in driver
             if (trip.DriverUserId != driverId)
             {
                 TempData["Error"] = "You can only view your own trips.";
                 return RedirectToAction("Index");
             }
 
+            //loads all bookings for this trip
             var bookings = _db.Bookings
                 .Include(b=> b.Rider)
                 .Where(b => b.TripId==id)
@@ -187,7 +197,7 @@ namespace Rider_and_Driver.Controllers
             return View(trip);
         }
 
-
+        //Cancels a trip and cascades the cancelation to all related bookins
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Cancel(int id)
@@ -201,14 +211,18 @@ namespace Rider_and_Driver.Controllers
             if(trip == null)
                 return NotFound();
 
+            //ensures the trip belongs to logged in driver
             if (trip.DriverUserId != driverId)
             {
                 TempData["Error"] = "You can only cancel your own trips.";
                 return RedirectToAction("Index");
             }
 
+            //Soft delete the trip
             trip.Status = "Cancelled";
 
+
+            //Casadaes cancellation: Finds all active bookings for this trips and cancels them
             var activeBookings = _db.Bookings
                 .Where(b => b.TripId == id && b.Status == "Confirmed")
                 .ToList();

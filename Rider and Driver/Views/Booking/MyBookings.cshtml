@@ -8,6 +8,7 @@
 
 <hr />
 
+<!-- Empty state if no booking exists-->
 @if (!Model.Any())
 {
     <div class="alert alert-info">
@@ -16,6 +17,7 @@
 }
 else
 {
+    <!-- Booking table-->
     <table class="table table-striped">
         <thead>
             <tr>
@@ -32,13 +34,16 @@ else
         </thead>
 
         <tbody>
+            <!-- Looping through each booking-->
             @foreach (var booking in Model)
             {
                 <tr>
+                    <!-- Booking data-->
                     <td>
                         @booking.BookedAt.ToString("dd MMM yyyy HH:mm")
                     </td>
 
+                    <!-- Trip detials-->
                     <td>
                         @booking.Trip?.DepartureDate.ToString("dd MMM yyyy")
                     </td>
@@ -59,6 +64,7 @@ else
                         @(booking.Trip?.Driver?.Username ?? "-")
                     </td>
 
+                    <!-- Cost and status-->
                     <td>
                         $@booking.TotalCost.ToString("F2")
                     </td>
@@ -78,6 +84,7 @@ else
                         }
                     </td>
 
+                    <!-- Cancel Action-->
                     <td>
                         @if (booking.Status == "Confirmed")
                         {

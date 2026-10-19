@@ -15,7 +15,7 @@ namespace Rider_and_Driver.Controllers
         }
 
      
-
+        //security gatekeepong: runs before any actionmethos in this controller
         public override void OnActionExecuting(
             ActionExecutingContext context)
         {
@@ -25,6 +25,7 @@ namespace Rider_and_Driver.Controllers
             var role =
                 HttpContext.Session.GetString("Role");
 
+            //is user logged in?
             if (string.IsNullOrEmpty(username))
             {
                 var returnUrl =
@@ -39,6 +40,8 @@ namespace Rider_and_Driver.Controllers
                 return;
             }
 
+
+            //is user actually a rider?
             if (role != "Rider")
             {
                 TempData["Error"] =
@@ -54,7 +57,7 @@ namespace Rider_and_Driver.Controllers
             base.OnActionExecuting(context);
         }
 
-
+        //Displays the Riders homepage
         [HttpGet]
         public IActionResult Index(DateTime? date,
             string? FromLocation,
@@ -62,6 +65,7 @@ namespace Rider_and_Driver.Controllers
             string? SortBy,
             string? SortOrder)
         {
+            //Defaults to todays date
             DateTime selectedDate =
                 date ?? DateTime.Today;
 
@@ -121,7 +125,7 @@ namespace Rider_and_Driver.Controllers
 
             var ridesList = rides.ToList();
                 
-
+            //Passes filter back to view
             ViewBag.SelectedDate = selectedDate;
             ViewBag.FromLocation = FromLocation; 
             ViewBag.ToLocation = ToLocation;
